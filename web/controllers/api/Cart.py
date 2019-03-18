@@ -40,7 +40,7 @@ def cart_set():
     if id is None or num is None:
         success_info['code'] = -1
         success_info['msg'] = 'error'
-    is_food = MemberCart.query.filter_by(food_id=id).first()
+    is_food = MemberCart.query.filter_by(member_id=member_id).first()
 
     if is_food:
         is_food.quantity = int(num)

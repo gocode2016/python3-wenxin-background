@@ -1,10 +1,14 @@
 from flask import render_template, g
 import datetime
-
+import time
+import random
+import string
 
 """
 分页方法
 """
+
+
 def iPagination(params):
     import math
 
@@ -58,9 +62,12 @@ class Tmp(object):
     member = '1'
     shared = '2'
 
+
 """
 统一渲染方法
 """
+
+
 def ops_templates(template, context={}):
     if 'current_user' in g:
         context['current_user'] = g.current_user
@@ -68,10 +75,21 @@ def ops_templates(template, context={}):
     data = Tmp()
     return render_template(template, **context, data=data)
 
+
 """
 获取当前时间
 """
 
+
 def getCurrentTime(format="%Y-%m-%d %H:%M:%S"):
     return datetime.datetime.now().strftime(format)
     # return datetime.datetime.now()
+
+
+"""
+生成订单号
+"""
+
+
+def genOrderNo():
+    return str(time.strftime('%Y%m%d%H%M%S')) + ''.join(random.choice(string.digits) for i in range(8))

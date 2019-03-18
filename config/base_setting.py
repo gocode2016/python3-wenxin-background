@@ -24,8 +24,8 @@ USER_STATUS = {
 
 # 微信key
 MINA = {
-    'appid': "wx312e4f853deb8168",
-    'appsecret': "62a51fb2c7d68cd22460d00dc3fef46d"
+    'appid': "wxa5085ab44202abbd",
+    'appsecret': "d0d28f24b687f1b961bb76336dc623fa"
 }
 
 STATUS_MAPPING = {
@@ -41,4 +41,14 @@ UPLOAD = {
 
 APP = {
     'domain': 'http://127.0.0.1:9999'
+}
+
+PAY_STATUS_DISPLAY_MAPPING = {
+    '-8': '待支付'
+}
+
+MERCH_INFO = {
+    "appid": "wxa5085ab44202abbd",
+    "mch_id": "1526080001",
+    'key': "6jcv4yqiREX22SodocIto2H0KQbzBlr0"
 }

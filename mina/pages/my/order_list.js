@@ -13,6 +13,7 @@ Page({
             currentType: curType
         });
         this.onShow();
+      this.getorderInfo();
     },
     orderDetail: function (e) {
         wx.navigateTo({
@@ -21,33 +22,34 @@ Page({
     },
     onLoad: function (options) {
         // 生命周期函数--监听页面加载
-
+      
     },
     onReady: function () {
         // 生命周期函数--监听页面初次渲染完
     },
     onShow: function () {
+      this.getorderInfo();
         var that = this;
-        that.setData({
-            order_list: [
-                {
-					status: -8,
-                    status_desc: "待支付",
-                    date: "2018-07-01 22:30:23",
-                    order_number: "20180701223023001",
-                    note: "记得周六发货",
-                    total_price: "85.00",
-                    goods_list: [
-                        {
-                            pic_url: "/images/food.jpg"
-                        },
-                        {
-                            pic_url: "/images/food.jpg"
-                        }
-                    ]
-                }
-            ]
-        });
+        // that.setData({
+        //     order_list: [
+          //       {
+					// status: -8,
+          //           status_desc: "待支付",
+          //           date: "2018-07-01 22:30:23",
+          //           order_number: "20180701223023001",
+          //           note: "记得周六发货",
+          //           total_price: "85.00",
+          //           goods_list: [
+          //               {
+          //                   pic_url: "/images/food.jpg"
+          //               },
+          //               {
+          //                   pic_url: "/images/food.jpg"
+          //               }
+          //           ]
+          //       }
+        //     ]
+        // });
     },
     onHide: function () {
         // 生命周期函数--监听页面隐藏
@@ -64,5 +66,44 @@ Page({
     onReachBottom: function () {
         // 页面上拉触底事件的处理函数
 
+    },
+    getorderInfo: function(){
+      var that = this;
+      wx.request({
+        url: 'http://127.0.0.1:9999/api/order/list',
+        method: 'POST',
+        data: {
+          status: that.data.status[that.data.currentType]
+        },
+        header: app.getRequestHeader(),
+        success: function (res) {
+            var resp = res.data;
+            if (resp.code == 200){
+              app.alert({ "content": resp.data.order_list})
+            }
+            that.setData({
+              order_list: resp.data.order_list,
+            })
+        }
+      })
+
+    },
+    toPay: function(e){
+      var that = this;
+      wx.request({
+        url: 'http://127.0.0.1:9999/api/order/pay',
+        header: app.getRequestHeader(),
+        method: "POST",
+        data: {
+            order_sn: e.currentTarget.dataset.id
+        },
+        success: function (res) {
+          var resp = res.data;
+          if (resp.code != 200) {
+            app.alert('error');
+            return;
+          };
+        }
+      })
     }
 })
