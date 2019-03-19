@@ -7,8 +7,9 @@ from application import db
 from common.libs.Helper import genOrderNo, getCurrentTime
 from application import app
 from hashlib import md5
+import xml.etree.ElementTree as ET
 import requests
-
+from common.libs import genNO
 class OrderService(object):
 
     def __init__(self):
@@ -89,21 +90,35 @@ class PayService(object):
     def __init__(self):
         pass
 
-    def create_pay(self, pay_data):
+    def create_sign(self, pay_data):
         """
         :param:
         :return: md5()
         """
-        stringA = '&'.join(["{}={}".format(item, pay_data.get(item)) for item in pay_data])
+        stringA = '&'.join(["{}={}".format(item, pay_data.get(item)) for item in sorted(pay_data)])
         stringSignTemp = stringA + "&key={}".format(app.config["MERCH_INFO"]["key"])
         sign = md5(stringSignTemp.encode('utf-8')).hexdigest()
         return sign.upper()
 
-    def get_pay_info(self):
-        pass
+    def send_pay_info(self, pay_info):
+        sign = self.create_sign(pay_info)
+        pay_info['sign'] = sign
+        send_data = self.dict_to_xml(pay_info)
+        print(send_data)
+        headers = {'Content-Type': 'application/xml'}
+        url = "https://api.mch.weixin.qq.com/pay/unifiedorder"
+        res = requests.post(url=url, headers=headers, data=send_data)
+        print(res.text.encode('ISO-8859-1'))
+    def dict_to_xml(self, dict_info):
+        xml = ['<xml>']
+        for key, value in dict_info.items():
+            xml.append("<{1}>{0}</{1}>".format(value, key))
+        xml.append('</xml>')
+        return ''.join(xml)
 
-    def dict_to_xml(self):
-        pass
-
-    def xml_to_dict(self):
-        pass
+    def xml_to_dict(self, xml_info):
+        xml_dict = {}
+        root = ET.fromstring(xml_info)
+        for child in root:
+            xml_dict[child.tag] = child.text
+        return xml_dict

@@ -6,7 +6,8 @@ from common.libs.Order.OrderService import OrderService, PayService
 from common.models.pay.PayOrder import PayOrder
 from common.models.pay.PayOrderItem import PayOrderItem
 from common.libs.Food.FoodService import getFoodInfo
-
+from application import app
+from common.libs import genNO
 # 订单信息的预览
 @api_bp.route('/order/info', methods=["POST"])
 def order_info():
@@ -121,9 +122,18 @@ def order_list():
 def order_pay():
     ret_data = {'code': 200, 'msg': '调用成功', 'data': {}}
     pay = PayService()
-    info = pay.create_pay({
-        "hello": 1,
-        'kk': "www"
-    })
-    print(info)
+    print(app.config['MERCH_INFO']['mch_id'])
+    order_info = {
+        'appid': app.config['MERCH_INFO']['appid'],
+        'mch_id': app.config['MERCH_INFO']['mch_id'],
+        'nonce_str': genNO(),
+        'body': 'test',
+        'out_trade_no': 1111111,
+        'total_fee': int(100 * 100),
+        'notify_url': 'http://www.weixin.qq.com/wxpay/pay.php',
+        'trade_type': "JSAPI",
+        'spbill_create_ip': '123.12.12.122',
+        'openid': 'oeNcc5CzkEvGv5ta0SSapOEcFgf0'
+    }
+    pay.send_pay_info(order_info)
     return jsonify(ret_data)
